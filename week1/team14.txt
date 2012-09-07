@@ -1,0 +1,63 @@
+$VAR1 = {
+          '' => undef,
+          'RB1' => [
+                     '14.00',
+                     'DeMarco Murray RB'
+                   ],
+          'BN1' => [
+                     '0.00',
+                     'John Skelton QB'
+                   ],
+          'TE' => [
+                    '0.00',
+                    'Coby Fleener TE'
+                  ],
+          'K' => [
+                   '6.00',
+                   'Dan Bailey K'
+                 ],
+          'DEF' => [
+                     '6.00',
+                     'Dallas Cowboys DEF   '
+                   ],
+          'BN3' => [
+                     '0.00',
+                     'Mikel Leshoure RB'
+                   ],
+          'BN5' => [
+                     '0.00',
+                     'Ryan Williams RB'
+                   ],
+          'BN6' => [
+                     '0.00',
+                     'Kendall Wright WR'
+                   ],
+          'BN4' => [
+                     '0.00',
+                     'Kevin Smith RB'
+                   ],
+          'WR2' => [
+                     '13.30',
+                     'Miles Austin WR'
+                   ],
+          'W/R' => [
+                     '0.00',
+                     'Mario Manningham WR'
+                   ],
+          'WR1' => [
+                     '8.50',
+                     'Dez Bryant WR'
+                   ],
+          'QB' => [
+                    '23.48',
+                    'Tony Romo QB'
+                  ],
+          'BN2' => [
+                     '0.00',
+                     'Peyton Hillis RB'
+                   ],
+          'RB2' => [
+                     '0.00',
+                     'Mark Ingram RB'
+                   ]
+        };

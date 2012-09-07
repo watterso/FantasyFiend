@@ -1,0 +1,16 @@
+$VAR1 = [
+          'Kitten Mittens',
+          'Sandusky\'s All-Star Tight Ends',
+          'Captain Crunch\'s Call Girls',
+          'League of Extraordinary Horses',
+          'Penington Fann Club',
+          'protactiniumuraniumlithium',
+          'Lions',
+          'The Dream Team',
+          'Wait what sport is this',
+          'Suh\'s Sack',
+          'Cowboys Fan Since Birth',
+          'Below Average Athleticism',
+          'Lelouch VI Britannia',
+          'romosexual'
+        ];

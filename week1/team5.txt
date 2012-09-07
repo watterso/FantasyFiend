@@ -1,0 +1,63 @@
+$VAR1 = {
+          '' => undef,
+          'RB1' => [
+                     '0.00',
+                     'C.J. Spiller RB'
+                   ],
+          'BN1' => [
+                     '0.00',
+                     'Andrew Luck QB'
+                   ],
+          'TE' => [
+                    '0.00',
+                    'Tony Gonzalez TE'
+                  ],
+          'K' => [
+                   '0.00',
+                   'Ryan Succop K'
+                 ],
+          'DEF' => [
+                     '0.00',
+                     'Chicago Bears DEF   '
+                   ],
+          'BN3' => [
+                     '0.00',
+                     'Joe McKnight RB'
+                   ],
+          'BN5' => [
+                     '0.00',
+                     'Kevin Walter WR'
+                   ],
+          'BN6' => [
+                     '0.00',
+                     'Jermaine Gresham TE'
+                   ],
+          'BN4' => [
+                     '0.00',
+                     'Danny Amendola WR'
+                   ],
+          'WR2' => [
+                     '0.00',
+                     'Malcom Floyd WR'
+                   ],
+          'W/R' => [
+                     '0.00',
+                     'Pierre Thomas RB'
+                   ],
+          'WR1' => [
+                     '0.00',
+                     'Roddy White WR'
+                   ],
+          'QB' => [
+                    '0.00',
+                    'Drew Brees QB'
+                  ],
+          'BN2' => [
+                     '0.00',
+                     'Ryan Mathews RB'
+                   ],
+          'RB2' => [
+                     '0.00',
+                     'Reggie Bush RB'
+                   ]
+        };

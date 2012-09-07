@@ -1,0 +1,59 @@
+$VAR1 = {
+          '' => undef,
+          'BN5' => [
+                     '0.00',
+                     'Michael Crabtree WR'
+                   ],
+          'RB1' => [
+                     '0.00',
+                     'Michael Turner RB'
+                   ],
+          'BN1' => [
+                     '0.00',
+                     'Ryan Fitzpatrick QB'
+                   ],
+          'TE' => [
+                    '0.00',
+                    'Vernon Davis TE'
+                  ],
+          'K' => [
+                   '0.00',
+                   'Sebastian Janikowski K'
+                 ],
+          'DEF' => [
+                     '0.00',
+                     'Detroit Lions DEF   '
+                   ],
+          'BN4' => [
+                     '0.00',
+                     'Jacquizz Rodgers RB'
+                   ],
+          'WR2' => [
+                     '0.00',
+                     'Greg Jennings WR'
+                   ],
+          'W/R' => [
+                     '0.00',
+                     'Santonio Holmes WR'
+                   ],
+          'QB' => [
+                    '0.00',
+                    'Tom Brady QB'
+                  ],
+          'WR1' => [
+                     '0.00',
+                     'Demaryius Thomas WR'
+                   ],
+          'BN3' => [
+                     '0.00',
+                     'Taiwan Jones RB'
+                   ],
+          'RB2' => [
+                     '0.00',
+                     'Rashard Mendenhall RB'
+                   ],
+          'BN2' => [
+                     '0.00',
+                     'Mark Sanchez QB'
+                   ]
+        };

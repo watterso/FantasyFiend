@@ -1,0 +1,63 @@
+$VAR1 = {
+          '' => undef,
+          'RB1' => [
+                     '0.00',
+                     'Chris Johnson RB'
+                   ],
+          'BN1' => [
+                     '0.00',
+                     'Robert Griffin III QB'
+                   ],
+          'TE' => [
+                    '0.00',
+                    'Jermichael Finley TE'
+                  ],
+          'K' => [
+                   '0.00',
+                   'Matt Bryant K'
+                 ],
+          'DEF' => [
+                     '0.00',
+                     'Pittsburgh Steelers DEF   '
+                   ],
+          'BN3' => [
+                     '0.00',
+                     'James Starks RB'
+                   ],
+          'BN5' => [
+                     '0.00',
+                     'Brandon LaFell WR'
+                   ],
+          'BN6' => [
+                     '0.00',
+                     'Lance Kendricks TE'
+                   ],
+          'BN4' => [
+                     '0.00',
+                     'Michael Floyd WR'
+                   ],
+          'WR2' => [
+                     '0.00',
+                     'Jeremy Maclin WR'
+                   ],
+          'W/R' => [
+                     '0.00',
+                     'Ben Tate RB'
+                   ],
+          'WR1' => [
+                     '3.80',
+                     'Hakeem Nicks WR'
+                   ],
+          'QB' => [
+                    '0.00',
+                    'Jay Cutler QB'
+                  ],
+          'BN2' => [
+                     '0.00',
+                     'Alfred Morris RB'
+                   ],
+          'RB2' => [
+                     '0.00',
+                     'Michael Bush RB'
+                   ]
+        };

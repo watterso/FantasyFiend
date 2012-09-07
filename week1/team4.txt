@@ -1,0 +1,63 @@
+$VAR1 = {
+          '' => undef,
+          'RB1' => [
+                     '0.00',
+                     'Adrian Peterson RB'
+                   ],
+          'BN1' => [
+                     '0.00',
+                     'Christian Ponder QB'
+                   ],
+          'TE' => [
+                    '0.00',
+                    'Dustin Keller TE'
+                  ],
+          'K' => [
+                   '0.00',
+                   'David Akers K'
+                 ],
+          'DEF' => [
+                     '0.00',
+                     'Philadelphia Eagles DEF   '
+                   ],
+          'BN3' => [
+                     '0.00',
+                     'Bernard Scott RB'
+                   ],
+          'BN5' => [
+                     '0.00',
+                     'Laurent Robinson WR'
+                   ],
+          'BN6' => [
+                     '0.00',
+                     'Titus Young WR'
+                   ],
+          'BN4' => [
+                     '0.00',
+                     'Denarius Moore WR'
+                   ],
+          'WR2' => [
+                     '0.00',
+                     'Marques Colston WR'
+                   ],
+          'W/R' => [
+                     '0.00',
+                     'Eric Decker WR'
+                   ],
+          'WR1' => [
+                     '0.00',
+                     'Steve Smith WR'
+                   ],
+          'QB' => [
+                    '0.00',
+                    'Cam Newton QB'
+                  ],
+          'BN2' => [
+                     '0.00',
+                     'Rashad Jennings RB'
+                   ],
+          'RB2' => [
+                     '0.00',
+                     'Trent Richardson RB'
+                   ]
+        };

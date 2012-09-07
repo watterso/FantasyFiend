@@ -1,0 +1,63 @@
+$VAR1 = {
+          '' => undef,
+          'RB1' => [
+                     '0.00',
+                     'Arian Foster RB'
+                   ],
+          'BN1' => [
+                     '0.00',
+                     'Andy Dalton QB'
+                   ],
+          'TE' => [
+                    '0.00',
+                    'Antonio Gates TE'
+                  ],
+          'K' => [
+                   '0.00',
+                   'Rob Bironas K'
+                 ],
+          'DEF' => [
+                     '0.00',
+                     'Seattle Seahawks DEF   '
+                   ],
+          'BN3' => [
+                     '0.00',
+                     'Kendall Hunter RB'
+                   ],
+          'BN5' => [
+                     '0.00',
+                     'Mike Williams WR'
+                   ],
+          'BN6' => [
+                     '0.00',
+                     'Greg Olsen TE'
+                   ],
+          'BN4' => [
+                     '0.00',
+                     'Randy Moss WR'
+                   ],
+          'WR2' => [
+                     '0.00',
+                     'Wes Welker WR'
+                   ],
+          'W/R' => [
+                     '0.00',
+                     'Torrey Smith WR'
+                   ],
+          'WR1' => [
+                     '0.00',
+                     'Reggie Wayne WR'
+                   ],
+          'QB' => [
+                    '0.00',
+                    'Michael Vick QB'
+                  ],
+          'RB2' => [
+                     '0.00',
+                     'Frank Gore RB'
+                   ],
+          'BN2' => [
+                     '0.00',
+                     'Roy Helu RB'
+                   ]
+        };

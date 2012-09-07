@@ -1,0 +1,63 @@
+$VAR1 = {
+          '' => undef,
+          'RB1' => [
+                     '0.00',
+                     'Matt Forte RB'
+                   ],
+          'BN1' => [
+                     '0.00',
+                     'Carson Palmer QB'
+                   ],
+          'TE' => [
+                    '0.00',
+                    'Fred Davis TE'
+                  ],
+          'K' => [
+                   '0.00',
+                   'Billy Cundiff K'
+                 ],
+          'DEF' => [
+                     '0.00',
+                     'Houston Texans DEF   '
+                   ],
+          'BN3' => [
+                     '0.00',
+                     'Isaac Redman RB'
+                   ],
+          'BN5' => [
+                     '0.00',
+                     'Lance Moore WR'
+                   ],
+          'BN6' => [
+                     '0.00',
+                     'Dennis Pitta TE'
+                   ],
+          'BN4' => [
+                     '0.00',
+                     'Dexter McCluster WR'
+                   ],
+          'WR2' => [
+                     '0.00',
+                     'Julio Jones WR'
+                   ],
+          'W/R' => [
+                     '0.00',
+                     'Santana Moss WR'
+                   ],
+          'WR1' => [
+                     '0.00',
+                     'Antonio Brown WR'
+                   ],
+          'QB' => [
+                    '0.00',
+                    'Ben Roethlisberger QB'
+                  ],
+          'BN2' => [
+                     '0.00',
+                     'Cedric Benson RB'
+                   ],
+          'RB2' => [
+                     '0.00',
+                     'Darren Sproles RB'
+                   ]
+        };
