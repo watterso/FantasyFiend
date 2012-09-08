@@ -443,8 +443,8 @@ print "\t#########################################\n\t\tuse h, help, or ? for us
 my @choices = qw(scrape analyze);
 while(prompt "ff=>"){
 	my $in = $_;
-	$in =~ s/[\^\[\[A|\^\[\[B\^\[\[C\^\[\[D]*//g;
-	$in =~ s/[^a-zA-Z0-9\s\?]*//g;
+	$in =~ s/[\^\[\[A|\^\[\[B\^\[\[C\^\[\[D]*//g; #replace cursor symbols with "" ie '^]]A' etc
+	$in =~ s/[^a-zA-Z0-9\s\?]*//g;	#everything that isn't alpha numeric, a space, or '?' is replaced with ""
 	my @spli = split / /, $in;
 	if(length($in)>0){
 		if ($in eq "quit" || $in eq "q"){
