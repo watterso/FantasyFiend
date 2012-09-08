@@ -1,4 +1,4 @@
-use IO::Prompt;
+use IO::Prompter;
 use WWW::Mechanize;
 use strict;
 use Data::Dumper;
@@ -12,6 +12,7 @@ use Switch;
 use Math::Complex;
 use Math::NumberCruncher;
 use Text::Levenshtein qw(distance);
+use Env;
 #Globals
 my %myTeam;		#hash of team members for selected team see "analyzer"
 my $myTeamNum;
@@ -23,6 +24,7 @@ my $WR_ref = { sum => 0, cnt => 0, val => []};
 my $TE_ref = { sum => 0, cnt => 0, val => []};
 my $K_ref = { sum => 0, cnt => 0, val => []};
 my $DEF_ref = { sum => 0, cnt => 0, val => []};		#references to stats for respective positions
+$ENV{IO_PROMPTER_HISTORY_KEY} = ord(65);
 
 sub help(){
 	print "Commands & Usage:\n";
@@ -32,6 +34,8 @@ sub help(){
 	print "comp first1 last1 first2 last2 --- compares two players\n";
 	print "stats --- prints league stats for the positions\n";
 	print "team [team_num] --- prints roster of team team_num, defaults to prev selected team\n";
+	
+	print "**Note <TAB> completion and command history via <CTRL-R>\n";
 }
 sub printStats{
 	my %QB = %{$QB_ref};
@@ -440,12 +444,9 @@ print "\t#########################################\n";
 print "\t#\tFantasyFiend v0.2\t\t#\n";
 print "\t#\tBy: James Watterson\t\t#\n";
 print "\t#########################################\n\t\tuse h, help, or ? for usage\n";
-my $cmd = "";
-while(prompt "ff=>"){
+my @choices = ("scrape", "analyze", "stats", "team", "quit", "run", "compare");
+while(prompt -prompt =>"=>", -complete => \@choices){
 	my $in = $_;
-	$in =~ s/[\^\[\[]A/$cmd/g;
-	$cmd=$in;
-	$in =~ s/[\^\[\[][BCD]//g; #replace cursor symbols with "" ie '^]]A' etc
 	$in =~ s/[^a-zA-Z0-9\s\?]*//g;	#everything that isn't alpha numeric, a space, or '?' is replaced with ""
 	my @spli = split / /, $in;
 	if(length($in)>0){
