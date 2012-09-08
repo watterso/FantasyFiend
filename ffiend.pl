@@ -13,17 +13,91 @@ use Math::Complex;
 use Math::NumberCruncher;
 use Text::Levenshtein qw(distance);
 #Globals
-my %myTeam = {};		#hash of team members for selected team see "analyzer"
-my @teams = ();		#arr of team hashes  see "analyzer"
-my @teamNames = ();	#arr of team names
-
+my %myTeam;		#hash of team members for selected team see "analyzer"
+my $myTeamNum;
+my @teams;		#arr of team hashes  see "analyzer"
+my @teamNames;	#arr of team names
+my $QB_ref = { sum => 0, cnt => 0, val => []};
+my $RB_ref = { sum => 0, cnt => 0, val => []};
+my $WR_ref = { sum => 0, cnt => 0, val => []};
+my $TE_ref = { sum => 0, cnt => 0, val => []};
+my $K_ref = { sum => 0, cnt => 0, val => []};
+my $DEF_ref = { sum => 0, cnt => 0, val => []};		#references to stats for respective positions
 
 sub help(){
-	print "Usage:\n";
-	print "'scrape'  --- scrapes team and players\n";
-	print "'analyze' --- analyzes data\n";
-	print "'run'  --- does scrape then analyze\n";
-	print "'comp first1 last1 first2 last2' --- displays stats side by side and compare stats\n";
+	print "Commands & Usage:\n";
+	print "scrape  --- scrapes team and players\n";
+	print "analyze --- analyzes data\n";
+	print "run  --- does scrape then analyze\n";
+	print "comp first1 last1 first2 last2 --- compares two players\n";
+	print "stats --- prints league stats for the positions\n";
+	print "team [team_num] --- prints roster of team team_num, defaults to prev selected team\n";
+}
+sub printStats{
+	my %QB = %{$QB_ref};
+	my %RB = %{$RB_ref};
+	my %WR = %{$WR_ref};
+	my %TE = %{$TE_ref};
+	my %K = %{$K_ref};
+	my %DEF = %{$DEF_ref};
+	print "\tStats\n";
+	print "+-------------------------------------------------------------+\n";
+	print "QB- Sum: ". $QB{sum} ."  Cnt: " . $QB{cnt} ."  Avg: ".($QB{mean})."  Std Dev: ".($QB{stdDev})."\n";
+	print "RB- Sum: ". $RB{sum} ."  Cnt: " . $RB{cnt} ."  Avg: ".($RB{mean})."  Std Dev: ".($RB{stdDev})."\n";
+	print "WR- Sum: ". $WR{sum} ."  Cnt: " . $WR{cnt} ."  Avg: ".($WR{mean})."  Std Dev: ".($WR{stdDev})."\n";
+	print "TE- Sum: ". $TE{sum} ."  Cnt: " . $TE{cnt} ."  Avg: ".($TE{mean})."  Std Dev: ".($TE{stdDev})."\n";
+	print "KR- Sum: ". $K{sum} ."  Cnt: " . $K{cnt} ."  Avg: ".($K{mean})."  Std Dev: ".($K{stdDev})."\n";
+	print "DF- Sum: ". $DEF{sum} ."  Cnt: " . $DEF{cnt} ."  Avg: ".($DEF{mean})."  Std Dev: ".($DEF{stdDev})."\n";	
+}
+sub printTeam{
+	my %myTeam = %{$_[0]};
+	print "\t\tRoster for ". $teamNames[$_[1]]."\n";
+	print "\t\t==========================\n";
+	my @data = @{$myTeam{QB}};
+	compPrint($QB_ref, "QB", \@data);
+	@data = @{$myTeam{RB1}};
+	compPrint($RB_ref, "RB1", \@data);
+	@data = @{$myTeam{RB2}};
+	compPrint($RB_ref, "RB2", \@data);
+	@data = @{$myTeam{WR1}};
+	compPrint($WR_ref, "WR1", \@data);
+	@data = @{$myTeam{WR2}};
+	compPrint($WR_ref, "WR2", \@data);
+	@data = @{$myTeam{TE}};
+	compPrint($TE_ref, "TE", \@data);
+	
+	@data = @{$myTeam{"W/R"}};
+	my @info = split / /, $data[1];
+	my $pos = $info[-1];
+	if($pos == "RB"){
+		compPrint($RB_ref, "W/R", \@data);
+	}elsif($pos == "WR"){
+		compPrint($WR_ref, "W/R", \@data);
+	}
+		
+	@data = @{$myTeam{K}};
+	compPrint($K_ref, "K", \@data);
+	@data = @{$myTeam{DEF}};
+	compPrint($DEF_ref, "DEF", \@data);
+	print "\t\t\tBench\n";
+	print "\t\t==========================\n";
+	my $numK = keys(%myTeam);
+	$numK-=9;
+	for(my $x=1;$x<=$numK; $x++){
+		my $key = "BN".$x;
+		my @data = @{$myTeam{$key}};
+		my @info = split / /, $data[1];
+		my $pos = $info[-1];
+		switch($pos){
+			case "QB"	{compPrint($QB_ref, $key, \@data)}
+			case "RB"	{compPrint($RB_ref, $key, \@data)}
+			case "WR"   {compPrint($WR_ref, $key, \@data)}
+			case "TE"	{compPrint($TE_ref, $key, \@data)}
+			case "K"	{compPrint($K_ref, $key, \@data)}
+			case "DEF"	{compPrint($DEF_ref, $key, \@data)}
+			else		{print $pos . " is invalid!\n"}
+		}
+	}
 }
 sub checkWeek{
 	my $mech = WWW::Mechanize->new();
@@ -75,7 +149,7 @@ sub compPrint{
 	my $presPos = $_[1];
 	my @dat = @{$_[2]};
 	
-	print $presPos. "- ". $dat[0] . " " . $dat[1] ."\n";
+	print "\t\t".$presPos. "- ". $dat[0] . " " . $dat[1] ."\n";
 	
 }
 sub scraper {
@@ -221,21 +295,12 @@ sub analyzer{
 	my $dir = dir("week" . $weekNum);
 	
 	#for stats
-	my $QB_ref = { sum => 0, cnt => 0, val => []};
-	my $RB_ref = { sum => 0, cnt => 0, val => []};
-	my $WR_ref = { sum => 0, cnt => 0, val => []};
-	my $TE_ref = { sum => 0, cnt => 0, val => []};
-	my $K_ref = { sum => 0, cnt => 0, val => []};
-	my $DEF_ref = { sum => 0, cnt => 0, val => []};
 	
 	%myTeam = {};
 	
 	#print "LINE 29\n";							#DEBUG
 	@teams = ();						#array of hash references
 	my $json = JSON->new->allow_nonref;
-	my $file1 = $dir->file("hash.txt");
-	my $str1 = $file1->slurp();
-	@teamNames = @{$json->decode( $str1 )};
 	my $herp = scalar @teamNames;
 	if($herp == 0){
 		print "Can not access team files, have you run Scraper?\n";
@@ -271,35 +336,8 @@ sub analyzer{
 	doStats($TE_ref);
 	doStats($K_ref);
 	doStats($DEF_ref);
+	if(0){
 	
-	my %QB = %{$QB_ref};
-	my %RB = %{$RB_ref};
-	my %WR = %{$WR_ref};
-	my %TE = %{$TE_ref};
-	my %K = %{$K_ref};
-	my %DEF = %{$DEF_ref};
-	print "\n\tStats\n";
-	print "+-------------------------------------------------------------+\n";
-	print "QB- Sum: ". $QB{sum} ."  Cnt: " . $QB{cnt} ."  Avg: ".($QB{mean})."  Std Dev: ".($QB{stdDev})."\n";
-	print "RB- Sum: ". $RB{sum} ."  Cnt: " . $RB{cnt} ."  Avg: ".($RB{mean})."  Std Dev: ".($RB{stdDev})."\n";
-	print "WR- Sum: ". $WR{sum} ."  Cnt: " . $WR{cnt} ."  Avg: ".($WR{mean})."  Std Dev: ".($WR{stdDev})."\n";
-	print "TE- Sum: ". $TE{sum} ."  Cnt: " . $TE{cnt} ."  Avg: ".($TE{mean})."  Std Dev: ".($TE{stdDev})."\n";
-	print "KR- Sum: ". $K{sum} ."  Cnt: " . $K{cnt} ."  Avg: ".($K{mean})."  Std Dev: ".($K{stdDev})."\n";
-	print "DF- Sum: ". $DEF{sum} ."  Cnt: " . $DEF{cnt} ."  Avg: ".($DEF{mean})."  Std Dev: ".($DEF{stdDev})."\n\n";
-	
-	for my $key (keys %myTeam) {
-		my @data = @{$myTeam{$key}};
-		my @info = split / /, $data[1];
-		my $pos = $info[-1];
-		switch($pos){
-			case "QB"	{compPrint($QB_ref, $key, \@data)}
-			case "RB"	{compPrint($RB_ref, $key, \@data)}
-			case "WR"   {compPrint($WR_ref, $key, \@data)}
-			case "TE"	{compPrint($TE_ref, $key, \@data)}
-			case "K"	{compPrint($K_ref, $key, \@data)}
-			case "DEF"	{compPrint($DEF_ref, $key, \@data)}
-			else		{print $pos . " is invalid!\n"}
-		}
 	}
 	
 	my $dir = dir("week" . $weekNum, "stats");
@@ -335,8 +373,19 @@ sub analyzer{
 	$file_handle->print($json_text1);
 }
 sub analyze{
-	my $team = prompt("Choose team: ",-raw);
 	my $week = checkWeek();
+	my $dir = dir("week" . $week);
+	my $json = JSON->new->allow_nonref;
+	my $file1 = $dir->file("hash.txt");
+	my $str1 = $file1->slurp();
+	@teamNames = @{$json->decode( $str1 )};
+	for(my $i=0; $i<(scalar @teamNames); $i++){
+		#print ($i+1) . ". ".$teams[$i];
+		print "\t ". ($i+1). ") " . $teamNames[$i]."\n";
+	}
+	my $team = prompt("Choose your team: ",-raw);
+	$team--;
+	$myTeamNum = $team;
 	analyzer($team,$week);
 }
 sub run{
@@ -373,7 +422,7 @@ sub getPlayer{
 			print "$x) ".$temp[1]."\n";
 			$x++;
 		}
-		my $choi = prompt "Choose Result: ", -raw, -i;
+		my $choi = prompt "Choose Result: ", -raw;
 		$comp1 = $res1[$choi-1];
 	}
 	return $comp1;
@@ -388,12 +437,14 @@ sub comp{
 	
 }
 print "\t#########################################\n";
-print "\t#\tFantasyFiend v0.1\t\t#\n";
+print "\t#\tFantasyFiend v0.2\t\t#\n";
 print "\t#\tBy: James Watterson\t\t#\n";
-print "\t#########################################\n\n";
+print "\t#########################################\n\t\tuse h, help, or ? for usage\n";
 my @choices = qw(scrape analyze);
 while(prompt "ff=>"){
 	my $in = $_;
+	$in =~ s/[\^\[\[A|\^\[\[B\^\[\[C\^\[\[D]*//g;
+	$in =~ s/[^a-zA-Z0-9\s\?]*//g;
 	my @spli = split / /, $in;
 	if(length($in)>0){
 		if ($in eq "quit" || $in eq "q"){
@@ -407,6 +458,35 @@ while(prompt "ff=>"){
 		}
 		elsif ($in eq "h" || $in eq "help" || $in eq "?"){
 			help();
+		}
+		elsif ($in eq "stats" || $in eq "stat"){
+			printStats();
+		}
+		elsif ($spli[0] eq "t" || $spli[0] eq "team"){
+			if(keys %myTeam){
+				if(scalar @spli==2){
+					if($spli[1]>0 && $spli[1]<(scalar @teams)){
+						printTeam($teams[$spli[1]-1], $spli[1]-1);
+					}else{
+						print "Team $spli[1] does not exist\n";
+					}
+				}else{
+					printTeam(\%myTeam, $myTeamNum);
+				}
+			}
+			else{
+				print "No team specified, running analysis....\n";
+				analyze();
+				if(scalar @spli==2){
+					if($spli[1]>0 && $spli[1]<(scalar @teams)){
+						printTeam($teams[$spli[1]-1], $spli[1]-1);
+					}else{
+						print "Team $spli[1] does not exist\n";
+					}
+				}else{
+					printTeam(\%myTeam, $myTeamNum);
+				}
+			}
 		}
 		elsif ($in eq "r" || $in eq "run"){
 			run();
