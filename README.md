@@ -1,4 +1,4 @@
 FantasyFriend
 =============
 
-A series of perl scripts to help those in need with NFL.com's fantasy football
+A pseudo-shell environment to help those in need with NFL.com's fantasy football
