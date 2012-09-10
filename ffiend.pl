@@ -16,6 +16,7 @@ use Env;
 #Globals
 my %myTeam;		#hash of team members for selected team see "analyzer"
 my $myTeamNum;
+my $theWeek;
 my @teams;		#arr of team hashes  see "analyzer"
 my @teamNames;	#arr of team names
 my $QB_ref = { sum => 0, cnt => 0, val => []};
@@ -24,8 +25,11 @@ my $WR_ref = { sum => 0, cnt => 0, val => []};
 my $TE_ref = { sum => 0, cnt => 0, val => []};
 my $K_ref = { sum => 0, cnt => 0, val => []};
 my $DEF_ref = { sum => 0, cnt => 0, val => []};		#references to stats for respective positions
-$ENV{IO_PROMPTER_HISTORY_KEY} = ord(65);
 
+sub deBless{		#(ref, val)
+	my $temp = new IO::Scalar $_[0];
+	$temp->print($_[1]);		
+}
 sub help(){
 	print "Commands & Usage:\n";
 	print "scrape  --- scrapes team and players\n";
@@ -34,8 +38,9 @@ sub help(){
 	print "comp first1 last1 first2 last2 --- compares two players\n";
 	print "stats --- prints league stats for the positions\n";
 	print "team [team_num] --- prints roster of team team_num, defaults to prev selected team\n";
+    print "scores --- prints out all the teams and their scores\n";
 	
-	print "**Note <TAB> completion and command history via <CTRL-R>\n";
+	print "**Note <TAB> completion and command history via <CTRL-R>**\n";
 }
 sub printStats{
 	my %QB = %{$QB_ref};
@@ -46,31 +51,33 @@ sub printStats{
 	my %DEF = %{$DEF_ref};
 	print "\tStats\n";
 	print "+-------------------------------------------------------------+\n";
-	print "QB- Sum: ". $QB{sum} ."  Cnt: " . $QB{cnt} ."  Avg: ".($QB{mean})."  Std Dev: ".($QB{stdDev})."\n";
-	print "RB- Sum: ". $RB{sum} ."  Cnt: " . $RB{cnt} ."  Avg: ".($RB{mean})."  Std Dev: ".($RB{stdDev})."\n";
-	print "WR- Sum: ". $WR{sum} ."  Cnt: " . $WR{cnt} ."  Avg: ".($WR{mean})."  Std Dev: ".($WR{stdDev})."\n";
-	print "TE- Sum: ". $TE{sum} ."  Cnt: " . $TE{cnt} ."  Avg: ".($TE{mean})."  Std Dev: ".($TE{stdDev})."\n";
-	print "KR- Sum: ". $K{sum} ."  Cnt: " . $K{cnt} ."  Avg: ".($K{mean})."  Std Dev: ".($K{stdDev})."\n";
-	print "DF- Sum: ". $DEF{sum} ."  Cnt: " . $DEF{cnt} ."  Avg: ".($DEF{mean})."  Std Dev: ".($DEF{stdDev})."\n";	
+	print "QB- Sum: ". $QB{sum} ."  Cnt: " . $QB{cnt} ."  Avg: ".($QB{mean})."  Std Dev: ".($QB{stdDev})." Median: ".$QB{medi}."\n";
+	print "RB- Sum: ". $RB{sum} ."  Cnt: " . $RB{cnt} ."  Avg: ".($RB{mean})."  Std Dev: ".($RB{stdDev})." Median: ".$RB{medi}."\n";
+	print "WR- Sum: ". $WR{sum} ."  Cnt: " . $WR{cnt} ."  Avg: ".($WR{mean})."  Std Dev: ".($WR{stdDev})." Median: ".$WR{medi}."\n";
+	print "TE- Sum: ". $TE{sum} ."  Cnt: " . $TE{cnt} ."  Avg: ".($TE{mean})."  Std Dev: ".($TE{stdDev})." Median: ".$TE{medi}."\n";
+	print "KR- Sum: ". $K{sum} ."  Cnt: " . $K{cnt} ."  Avg: ".($K{mean})."  Std Dev: ".($K{stdDev})." Median: ".$K{medi}."\n";
+	print "DF- Sum: ". $DEF{sum} ."  Cnt: " . $DEF{cnt} ."  Avg: ".($DEF{mean})."  Std Dev: ".($DEF{stdDev})." Median: ".$DEF{medi}."\n";
 }
 sub printTeam{
-	my %myTeam = %{$_[0]};
-	print "\t\tRoster for ". $teamNames[$_[1]]."\n";
+	my %theTeam = %{$teams[$_[0]]};
+    my $tScore = teamScore($_[0]);
+	print "\t\tRoster for ". $teamNames[$_[0]]."\n";
+    print "\t\tTeam Score: $tScore\n";
 	print "\t\t==========================\n";
-	my @data = @{$myTeam{QB}};
+	my @data = @{$theTeam{QB}};
 	compPrint($QB_ref, "QB", \@data);
-	@data = @{$myTeam{RB1}};
+	@data = @{$theTeam{RB1}};
 	compPrint($RB_ref, "RB1", \@data);
-	@data = @{$myTeam{RB2}};
+	@data = @{$theTeam{RB2}};
 	compPrint($RB_ref, "RB2", \@data);
-	@data = @{$myTeam{WR1}};
+	@data = @{$theTeam{WR1}};
 	compPrint($WR_ref, "WR1", \@data);
-	@data = @{$myTeam{WR2}};
+	@data = @{$theTeam{WR2}};
 	compPrint($WR_ref, "WR2", \@data);
-	@data = @{$myTeam{TE}};
+	@data = @{$theTeam{TE}};
 	compPrint($TE_ref, "TE", \@data);
 	
-	@data = @{$myTeam{"W/R"}};
+	@data = @{$theTeam{"W/R"}};
 	my @info = split / /, $data[1];
 	my $pos = $info[-1];
 	if($pos == "RB"){
@@ -79,17 +86,17 @@ sub printTeam{
 		compPrint($WR_ref, "W/R", \@data);
 	}
 		
-	@data = @{$myTeam{K}};
+	@data = @{$theTeam{K}};
 	compPrint($K_ref, "K", \@data);
-	@data = @{$myTeam{DEF}};
+	@data = @{$theTeam{DEF}};
 	compPrint($DEF_ref, "DEF", \@data);
 	print "\t\t\tBench\n";
 	print "\t\t==========================\n";
-	my $numK = keys(%myTeam);
+	my $numK = keys(%theTeam);
 	$numK-=9;
 	for(my $x=1;$x<=$numK; $x++){
 		my $key = "BN".$x;
-		my @data = @{$myTeam{$key}};
+		my @data = @{$theTeam{$key}};
 		my @info = split / /, $data[1];
 		my $pos = $info[-1];
 		switch($pos){
@@ -116,6 +123,7 @@ sub checkWeek{
 	}else{
 		$week = $temp1[1];
 	}
+    $theWeek = $week;
 	return $week;
 }
 sub getCount{
@@ -160,8 +168,7 @@ sub scraper {
 	my $usrn = $_[0];
 	my $pswd = $_[1];
 	my $week = $_[2];
-	my $url = "http://fantasy.nfl.com/league/" . $_[3];
-	
+    my $url = "http://fantasy.nfl.com/league/" .$_[3];
 	my $mech = WWW::Mechanize->new();
 	$mech->get($url);
 	$mech->submit_form(
@@ -286,10 +293,13 @@ sub scraper {
 	$file_handle->print($json_text);
 }
 sub scrape{
-	my $week = checkWeek();
-	my $league = prompt("Please enter your league number: ", -raw);
-	my $usrn = prompt("Username: ", -raw);
-	my $pswd = prompt("Password: ", -rawe => '*');
+	my $week = $_[0];
+	if($week == 0){
+		$week = checkWeek();
+	}
+	my $league = prompt("Please enter your league number: ");
+	my $usrn = prompt("Username: " );
+	my $pswd = prompt("Password: ", -e => '*');
 	scraper($usrn,$pswd,$week,$league);
 }
 sub analyzer{
@@ -377,7 +387,10 @@ sub analyzer{
 	$file_handle->print($json_text1);
 }
 sub analyze{
-	my $week = checkWeek();
+	my $week = $_[0];
+	if($week == 0){
+		$week = checkWeek();
+	}
 	my $dir = dir("week" . $week);
 	my $json = JSON->new->allow_nonref;
 	my $file1 = $dir->file("hash.txt");
@@ -385,16 +398,17 @@ sub analyze{
 	@teamNames = @{$json->decode( $str1 )};
 	for(my $i=0; $i<(scalar @teamNames); $i++){
 		#print ($i+1) . ". ".$teams[$i];
-		print "\t ". ($i+1). ") " . $teamNames[$i]."\n";
+		print "\t\t ". ($i+1). ") " . $teamNames[$i]."\n";
 	}
-	my $team = prompt("Choose your team: ",-raw);
-	$team--;
+	my $team = prompt("Choose your team: ");
+	$team-=1;
 	$myTeamNum = $team;
 	analyzer($team,$week);
 }
 sub run{
-	scrape();
-	analyze();
+	my $week = checkWeek();
+	scrape($week);
+	analyze($week);
 }
 sub getPlayer{
 	my $p1 = $_[0];
@@ -440,11 +454,30 @@ sub comp{
 	#print "Got ".$p2[1]."\n";
 	
 }
+sub teamScore{
+    my %theTeam = %{$teams[$_[0]]};
+    my $tScore+= $theTeam{QB}[0]+$theTeam{RB1}[0]+$theTeam{RB2}[0]+$theTeam{WR1}[0]+$theTeam{WR2}[0]+$theTeam{TE}[0]+$theTeam{K}[0]+$theTeam{DEF}[0];
+    return $tScore;
+	
+}
+sub scores{
+    print "\t\tScores for Week $theWeek\n";
+    print "\t\t====================\n";
+    my %stands = ();
+    for(my $x = 0; $x<(scalar @teamNames); $x++){
+        $stands{$teamNames[$x]} = teamScore($x);
+        #print "$teamNames[$x] scored ".teamScore($x)." points.\n";
+    }
+    foreach my $fruit (sort {$stands{$b} <=> $stands{$a}} keys %stands) {
+        print  "\t\t".$stands{$fruit} . " - " . $fruit  ."\n";
+    }
+}
 print "\t#########################################\n";
 print "\t#\tFantasyFiend v0.2\t\t#\n";
 print "\t#\tBy: James Watterson\t\t#\n";
 print "\t#########################################\n\t\tuse h, help, or ? for usage\n";
-my @choices = ("scrape", "analyze", "stats", "team", "quit", "run", "compare");
+my @choices = ("scrape", "analyze", "stats", "team", "quit", "run", "compare", "scores");
+@choices = sort @choices;
 while(prompt -prompt =>"=>", -complete => \@choices){
 	my $in = $_;
 	$in =~ s/[^a-zA-Z0-9\s\?]*//g;	#everything that isn't alpha numeric, a space, or '?' is replaced with ""
@@ -452,9 +485,18 @@ while(prompt -prompt =>"=>", -complete => \@choices){
 	if(length($in)>0){
 		if ($in eq "quit" || $in eq "q"){
 			last;
-		}
-		elsif ($in eq "lyze" || $in eq "analyze"){
-			analyze();
+		}elsif ($in eq "scores"){
+            if(keys %myTeam){
+				scores();
+			}
+			else{
+				print "No teams in memomry, running analysis....\n";
+				analyze();
+				scores();
+			}
+        }
+		elsif (substr($in,0,4) eq "lyze" || substr($in,0,7) eq "analyze"){
+			analyze($spli[1]);
 		}
 		elsif ($in eq "scrape" || $in eq "scrap"){
 			scrape();
@@ -468,13 +510,13 @@ while(prompt -prompt =>"=>", -complete => \@choices){
 		elsif ($spli[0] eq "t" || $spli[0] eq "team"){
 			if(keys %myTeam){
 				if(scalar @spli==2){
-					if($spli[1]>0 && $spli[1]<(scalar @teams)){
-						printTeam($teams[$spli[1]-1], $spli[1]-1);
+					if($spli[1]>0 && $spli[1]<=(scalar @teams)){
+						printTeam($spli[1]-1);
 					}else{
 						print "Team $spli[1] does not exist\n";
 					}
 				}else{
-					printTeam(\%myTeam, $myTeamNum);
+					printTeam($myTeamNum);
 				}
 			}
 			else{
@@ -482,12 +524,12 @@ while(prompt -prompt =>"=>", -complete => \@choices){
 				analyze();
 				if(scalar @spli==2){
 					if($spli[1]>0 && $spli[1]<(scalar @teams)){
-						printTeam($teams[$spli[1]-1], $spli[1]-1);
+						printTeam($spli[1]-1);
 					}else{
 						print "Team $spli[1] does not exist\n";
 					}
 				}else{
-					printTeam(\%myTeam, $myTeamNum);
+					printTeam($myTeamNum);
 				}
 			}
 		}
@@ -507,7 +549,7 @@ while(prompt -prompt =>"=>", -complete => \@choices){
 			}
 		}
 		else{
-			print "command: '$in' not recognized\n";
+			print "command: '$spli[0]' not recognized\n";
 		}
 	}
 }
