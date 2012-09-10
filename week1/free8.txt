@@ -1,0 +1,1 @@
+[["19.00","Cleveland Browns DEF"],["13.00","St. Louis Rams DEF"],["11.00","Tampa Bay Buccaneers DEF"],["8.00","Arizona Cardinals DEF"],["7.00","Miami Dolphins DEF"],["7.00","Washington Redskins DEF"],["6.00","Indianapolis Colts DEF"],["4.00","Jacksonville Jaguars DEF"],["4.00","Minnesota Vikings DEF"],["3.00","Carolina Panthers DEF"],["3.00","New Orleans Saints DEF"]]

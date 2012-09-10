@@ -25,6 +25,7 @@ my $WR_ref = { sum => 0, cnt => 0, val => []};
 my $TE_ref = { sum => 0, cnt => 0, val => []};
 my $K_ref = { sum => 0, cnt => 0, val => []};
 my $DEF_ref = { sum => 0, cnt => 0, val => []};		#references to stats for respective positions
+my %frees;
 
 sub deBless{		#(ref, val)
 	my $temp = new IO::Scalar $_[0];
@@ -110,6 +111,31 @@ sub printTeam{
 		}
 	}
 }
+sub freeComp{
+    my @dat = @{$_[1]};
+    my @info = split / /, $dat[1];
+    my $pos = $info[-1];
+    #print "Getting frees for '$pos'\n";
+    my @theFrees = @{$frees{$pos}};
+    my %reps = ();
+    #print "comp $theFrees[0][1] to $dat[0]\n";
+    if($theFrees[0][0]-2>$dat[0]){
+        my $index = 0;
+        my $pts = $theFrees[0][0];
+        while($pts-2>$dat[0] and $index<3){
+            $reps{$theFrees[$index][1]} = $pts;
+            $index++;
+            $pts = $theFrees[$index][0];
+            #print scalar( keys %reps)."\n";
+        }
+        print "Consider replacing $dat[1] - $dat[0] with:\n";
+        foreach my $fruit (sort {$reps{$b} <=> $reps{$a}} keys %reps) {
+            print  "\t\t".$fruit. " - " . $reps{$fruit}  ."\n";
+        }
+    }
+    #print Dumper @theFrees;
+    
+}
 sub checkWeek{
 	my $mech = WWW::Mechanize->new();
 	$mech->get("http://www.nfl.com/scores");
@@ -161,7 +187,7 @@ sub compPrint{
 	my $presPos = $_[1];
 	my @dat = @{$_[2]};
 	
-	print "\t\t".$presPos. "- ". $dat[0] . " " . $dat[1] ."\n";
+	print "\t\t". $dat[0] . " " . $dat[1] ." - ".$presPos. "\n";
 	
 }
 sub scraper {
@@ -213,45 +239,45 @@ sub scraper {
 			if($ts->count==0){
 				if($j==5){
 					my @info = split / -/, $ts->cell(2,3);
-					$disTeam{"QB"} = [$ts->cell(2,-1), $info[0]];
+					$disTeam{"QB"} = [$ts->cell(2,-1), trim($info[0])];
 					@info = split / -/, $ts->cell(3,3);
-					$disTeam{"RB1"} = [$ts->cell(3,-1), $info[0]];
+					$disTeam{"RB1"} = [$ts->cell(3,-1), trim($info[0])];
 					@info = split / -/, $ts->cell(4,3);
-					$disTeam{"RB2"} = [$ts->cell(4,-1), $info[0]];
+					$disTeam{"RB2"} = [$ts->cell(4,-1), trim($info[0])];
 					@info = split / -/, $ts->cell(5,3);
-					$disTeam{"WR1"} = [$ts->cell(5,-1), $info[0]];
+					$disTeam{"WR1"} = [$ts->cell(5,-1), trim($info[0])];
 					@info = split / -/, $ts->cell(6,3);
-					$disTeam{"WR2"} = [$ts->cell(6,-1), $info[0]];
+					$disTeam{"WR2"} = [$ts->cell(6,-1), trim($info[0])];
 					@info = split / -/, $ts->cell(7,3);
-					$disTeam{"TE"} = [$ts->cell(7,-1), $info[0]];
+					$disTeam{"TE"} = [$ts->cell(7,-1), trim($info[0])];
 					@info = split / -/, $ts->cell(8,3);
-					$disTeam{"W/R"} = [$ts->cell(8,-1), $info[0]];
+					$disTeam{"W/R"} = [$ts->cell(8,-1), trim($info[0])];
 					#Skip 9 for "Bench" row
 					for(my $i=10; $i<$lim; $i++){
 						@info = split / -/, $ts->cell($i,3);
-						$disTeam{"BN".($i-9)} = [$ts->cell($i,-1), $info[0]];
+						$disTeam{"BN".($i-9)} = [$ts->cell($i,-1), trim($info[0])];
 					
 					}
 					
 				}else{
 					my @info = split / -/, $ts->cell(2,2);
-					$disTeam{"QB"} = [$ts->cell(2,-1), $info[0]];
+					$disTeam{"QB"} = [$ts->cell(2,-1), trim($info[0])];
 					@info = split / -/, $ts->cell(3,2);
-					$disTeam{"RB1"} = [$ts->cell(3,-1), $info[0]];
+					$disTeam{"RB1"} = [$ts->cell(3,-1), trim($info[0])];
 					@info = split / -/, $ts->cell(4,2);
-					$disTeam{"RB2"} = [$ts->cell(4,-1), $info[0]];
+					$disTeam{"RB2"} = [$ts->cell(4,-1), trim($info[0])];
 					@info = split / -/, $ts->cell(5,2);
-					$disTeam{"WR1"} = [$ts->cell(5,-1), $info[0]];
+					$disTeam{"WR1"} = [$ts->cell(5,-1), trim($info[0])];
 					@info = split / -/, $ts->cell(6,2);
-					$disTeam{"WR2"} = [$ts->cell(6,-1), $info[0]];
+					$disTeam{"WR2"} = [$ts->cell(6,-1), trim($info[0])];
 					@info = split / -/, $ts->cell(7,2);
-					$disTeam{"TE"} = [$ts->cell(7,-1), $info[0]];
+					$disTeam{"TE"} = [$ts->cell(7,-1), trim($info[0])];
 					@info = split / -/, $ts->cell(8,2);
-					$disTeam{"W/R"} = [$ts->cell(8,-1), $info[0]];
+					$disTeam{"W/R"} = [$ts->cell(8,-1), trim($info[0])];
 					#Skip 9 for "Bench" row
 					for(my $i=10; $i<$lim; $i++){
 						@info = split / -/, $ts->cell($i,2);
-						$disTeam{"BN".($i-9)} = [$ts->cell($i,-1), $info[0]];
+						$disTeam{"BN".($i-9)} = [$ts->cell($i,-1), trim($info[0])];
 					
 					}
 				}
@@ -259,19 +285,19 @@ sub scraper {
 			if($ts->count==1){
 				if($j==5){
 					my @info = split / -/, $ts->cell(2,3);
-					$disTeam{"K"} = [$ts->cell(2,-1), $info[0]];
+					$disTeam{"K"} = [$ts->cell(2,-1), trim($info[0])];
 				}else{
 					my @info = split / -/, $ts->cell(2,2);
-					$disTeam{"K"} = [$ts->cell(2,-1), $info[0]];	
+					$disTeam{"K"} = [$ts->cell(2,-1), trim($info[0])];	
 				}
 			}
 			if($ts->count==2){
 				if($j==5){
 					my @info = split /-/, $ts->cell(2,3);
-					$disTeam{"DEF"} = [$ts->cell(2,-1), $info[0]];
+					$disTeam{"DEF"} = [$ts->cell(2,-1), trim($info[0])];
 				}else{
 					my @info = split /-/, $ts->cell(2,2);
-					$disTeam{"DEF"} = [$ts->cell(2,-1), $info[0]];	
+					$disTeam{"DEF"} = [$ts->cell(2,-1), trim($info[0])];	
 				}
 			}
 		}
@@ -291,6 +317,88 @@ sub scraper {
 	my $file = $dir->file("hash.txt");
 	my $file_handle = $file->openw();
 	$file_handle->print($json_text);
+
+    print "Parsing Free Agents:\n";
+    %frees = ();
+    my $statPos ="players?playerStatus=available&position=";
+    my $wkSeason ="&statCategory=stats&statSeason=2012&statType=weekStats&statWeek=";
+    my $front = '.*<div class="tableWrap.*>(.*)</div>.*';
+    for(my $i=1; $i<5; $i++){
+        $mech->get($url."/".$statPos.$i.$wkSeason.$week);
+        my $te = HTML::TableExtract->new();
+        my $html = $mech->content;
+        $te->parse($html);
+        print getPos($i);
+        my @players = ();
+        foreach my $ts ($te->tables) {
+            print ".";
+            foreach my $row ($ts->rows) {
+                my @row1 = @{$row};
+                if($row1[-1]>0){
+                    my @dat = split /-/, $row1[1];
+                    my $player = trim($dat[0]);
+                    my @ret = ($row1[-1],$player);
+                    push(@players, \@ret);
+                }
+            }
+            print ".";
+        }
+        print ".";
+        $frees{getPos($i)}=\@players;
+        my $json = JSON->new->allow_nonref;
+		my $json_text   = $json->encode(\@players);
+		my $file = $dir->file("free". $i .".txt");
+		my $file_handle = $file->openw();
+		$file_handle->print($json_text);
+        print ".";
+        print "done!\n";
+    }
+    for(my $i=7; $i<9; $i++){
+        $mech->get($url."/".$statPos.$i.$wkSeason.$week);
+        my $te = HTML::TableExtract->new();
+        my $html = $mech->content;
+        $te->parse($html);
+        print getPos($i);
+        my @players = ();
+        foreach my $ts ($te->tables) {
+            print ".";
+            foreach my $row ($ts->rows) {
+                my @row1 = @{$row};
+                if($row1[-1]>0){
+                    my @dat = split /-/, $row1[1];
+                    my $player = trim($dat[0]);
+                    my @ret = ($row1[-1],$player);
+                    push(@players, \@ret);
+                }
+            }
+            print ".";
+        }
+        print ".";
+        $frees{getPos($i)}=\@players;
+        my $json = JSON->new->allow_nonref;
+		my $json_text   = $json->encode(\@players);
+		my $file = $dir->file("free". $i .".txt");
+		my $file_handle = $file->openw();
+		$file_handle->print($json_text);
+        print ".done!\n";
+    }
+    
+}
+sub getPos{
+    switch($_[0]){
+        case 1 {return "QB"}
+        case 2 {return "RB"}
+        case 3 {return "WR"}
+        case 4 {return "TE"}
+        case 7 {return "K"}
+        case 8 {return "DEF"}
+        else {return "OTHER"}
+    }
+}
+sub trim($){           #trims trailing whitespace
+	my $string = shift;
+	$string =~ s/\s+$//;
+	return $string;
 }
 sub scrape{
 	my $week = $_[0];
@@ -350,10 +458,7 @@ sub analyzer{
 	doStats($TE_ref);
 	doStats($K_ref);
 	doStats($DEF_ref);
-	if(0){
-	
-	}
-	
+    
 	my $dir = dir("week" . $weekNum, "stats");
 	$dir->mkpath();
 	my $json_text1   = $json->encode($QB_ref);
@@ -385,6 +490,35 @@ sub analyzer{
 	$file = $dir->file("DEF.txt");
 	$file_handle = $file->openw();
 	$file_handle->print($json_text1);
+    %frees = ();
+    my $dir = dir("week" . $weekNum);
+    for(my $x=1;$x<9;$x++){
+		my $file = $dir->file("free".$x.".txt");
+		my $str = $file->slurp();
+        #print "free$x.txt:\n$str\n";
+        $frees{getPos($x)} = $json->decode( $str );
+        if($x==4){
+            $x=6;
+        }
+    }
+    #print Dumper \%frees;
+    my $bench = prompt "Show bench? (y/n) ", -yn;
+    foreach my $key (keys %myTeam){
+        if($bench or substr($key,0,2) ne "BN"){
+            my @data = @{$myTeam{$key}};
+            my @info = split / /, $data[1];
+            my $pos = $info[-1];
+            switch($pos){
+                case "QB"	{freeComp(0,\@data)}
+                case "RB"	{freeComp(1,\@data)}
+                case "WR"   {freeComp(2,\@data)}
+                case "TE"	{freeComp(3,\@data)}
+                case "K"	{freeComp(4,\@data)}
+                case "DEF"	{freeComp(5,\@data)}
+                else		{print $pos . " is invalid!\n"}
+            }
+        }
+    }
 }
 sub analyze{
 	my $week = $_[0];
@@ -440,16 +574,16 @@ sub getPlayer{
 			print "$x) ".$temp[1]."\n";
 			$x++;
 		}
-		my $choi = prompt "Choose Result: ", -raw;
+		my $choi = prompt "Choose Result: ";
 		$comp1 = $res1[$choi-1];
 	}
 	return $comp1;
 }
 sub comp{
 	my @p1 = @{getPlayer($_[0])};
-	print $teamNames[$p1[2]]." owns ".$p1[1]." : ".$p1[0]."\n"; 
 	#print "Got ".$p1[1]."\n";
 	my @p2 = @{getPlayer($_[1])};
+    print $teamNames[$p1[2]]." owns ".$p1[1]." : ".$p1[0]."\n";
 	print $teamNames[$p2[2]]." owns ".$p2[1]." : ".$p2[0]."\n"; 
 	#print "Got ".$p2[1]."\n";
 	
@@ -473,14 +607,13 @@ sub scores{
     }
 }
 print "\t#########################################\n";
-print "\t#\tFantasyFiend v0.2\t\t#\n";
+print "\t#\tFantasyFiend v0.3\t\t#\n";
 print "\t#\tBy: James Watterson\t\t#\n";
 print "\t#########################################\n\t\tuse h, help, or ? for usage\n";
 my @choices = ("scrape", "analyze", "stats", "team", "quit", "run", "compare", "scores");
 @choices = sort @choices;
 while(prompt -prompt =>"=>", -complete => \@choices){
 	my $in = $_;
-	$in =~ s/[^a-zA-Z0-9\s\?]*//g;	#everything that isn't alpha numeric, a space, or '?' is replaced with ""
 	my @spli = split / /, $in;
 	if(length($in)>0){
 		if ($in eq "quit" || $in eq "q"){
@@ -536,6 +669,27 @@ while(prompt -prompt =>"=>", -complete => \@choices){
 		elsif ($in eq "r" || $in eq "run"){
 			run();
 		}
+        elsif ($spli[0] eq "eval"){
+			my $cmd = substr($in, 4);
+            print "evaling: $cmd\n";
+            my $res = eval $cmd;
+            print $res."\n";
+		}
+        elsif($in eq "shell"){
+            print "**WARNING**\nYou are now entering the perl shell, type 'return' to exit\n";
+            while(prompt -prompt =>"\$"){
+                my $cmd = $_;
+                if($cmd eq "return"){
+                    last;
+                }
+                else{
+                    my $ret = eval $cmd;
+                    if(length($ret>0)){
+                        print "$ret\n";
+                    }
+                }
+            }
+        }
 		elsif ($spli[0] eq "c" || $spli[0] eq "comp" || $spli[0] eq "compare"){
 			#print (scalar @spli)."\n";
 			if((scalar @teams)>0){

@@ -1,0 +1,1 @@
+[["19.00","Blaine Gabbert QB"],["8.12","Russell Wilson QB"],["6.54","Kevin Kolb QB"],["2.66","Ryan Tannehill QB"],["1.72","Matt Hasselbeck QB"],["1.70","Colin Kaepernick QB"]]
