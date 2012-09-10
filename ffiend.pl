@@ -222,7 +222,7 @@ sub scraper {
 	print "Parsing Teams:\n";
 	for(my $j = 1; $j<=$numTeams; $j++){
 		print $teamNames[$j-1]."($j)";
-		$mech->get($tUrl . $j);
+		$mech->get($tUrl . $j."?week=".$week);
 		print ".";
 		my $te = HTML::TableExtract->new();
 		my $html = $mech->content;

@@ -3,8 +3,8 @@ use strict;
 use Data::Dumper;
 use HTML::TableExtract;
 
-my $usrn = "analzone";
-my $pswd = "james276";
+my $usrn = "usr";
+my $pswd = "pass";
 my $week = 1;
 my $url = "http://fantasy.nfl.com/league/1012931";
 my $mech = WWW::Mechanize->new();
