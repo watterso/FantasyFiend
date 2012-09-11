@@ -115,7 +115,16 @@ sub freeComp{
     my @dat = @{$_[1]};
     my @info = split / /, $dat[1];
     my $pos = $info[-1];
-    #print "Getting frees for '$pos'\n";
+    my $ref;
+    switch($pos){
+        case "QB"	{$ref = $QB_ref}
+        case "RB"	{$ref = $RB_ref}
+        case "WR"   {$ref = $WR_ref}
+        case "TE"	{$ref = $TE_ref}
+        case "K"	{$ref = $K_ref}
+        case "DEF"	{$ref = $DEF_ref}
+    }
+        #print "Getting frees for '$pos'\n";
     my @theFrees = @{$frees{$pos}};
     my %reps = ();
     #print "comp $theFrees[0][1] to $dat[0]\n";
@@ -123,14 +132,17 @@ sub freeComp{
         my $index = 0;
         my $pts = $theFrees[0][0];
         while($pts-2>$dat[0] and $index<3){
-            $reps{$theFrees[$index][1]} = $pts;
+            my $perc = percentile($ref,$pts,0);
+            my @der = ($pts,$perc);
+            $reps{$theFrees[$index][1]} = \@der;
             $index++;
             $pts = $theFrees[$index][0];
             #print scalar( keys %reps)."\n";
         }
-        print "Consider replacing $dat[1] - $dat[0] with:\n";
-        foreach my $fruit (sort {$reps{$b} <=> $reps{$a}} keys %reps) {
-            print  "\t\t".$fruit. " - " . $reps{$fruit}  ."\n";
+        print "Consider replacing $dat[1] - $dat[0] (".percentile($ref,$dat[0],1)."%) with:\n";
+        foreach my $fruit (sort {$reps{$b}[0] <=> $reps{$a}[0]} keys %reps) {
+            my @arr = @{$reps{$fruit}};
+            print  "\t\t".$fruit. " - " . $arr[0]." ($arr[1]%)"."\n";
         }
     }
     #print Dumper @theFrees;
@@ -156,6 +168,27 @@ sub getCount{
 	$_[0] =~ m!<select id="teamId" name="teamId">(.*)</select>!;
 	my @temp1 = split /<.*?>/, $1;
 	return @temp1;
+}
+sub percentile{
+    my %ref = %{$_[0]};
+	my @ref_arr = @{$ref{val}};
+    my $theVal = $_[1];
+    my $counter = 0;
+    for(my $i =0;$i<(scalar @ref_arr);$i++){
+        if($theVal> $ref_arr[$i]){
+            $counter++;
+        }
+    }
+    my $oot;
+    if($_[2]){
+        $oot = $counter/($ref{cnt}-1);   #-1 to not count self
+    }
+    else{
+        $oot = $counter/($ref{cnt});   #-1 to not count self
+
+    }
+    $oot = $oot*100;                    #get percent
+    return int($oot);
 }
 sub addValues{
 	my %ref = %{$_[0]};
@@ -186,8 +219,9 @@ sub compPrint{
 	my %ref = %{$_[0]};
 	my $presPos = $_[1];
 	my @dat = @{$_[2]};
+    my $perc = percentile($_[0],$dat[0],1);
 	
-	print "\t\t". $dat[0] . " " . $dat[1] ." - ".$presPos. "\n";
+	print "\t\t". $dat[0] . " ($perc%) " . $dat[1] ." - ".$presPos. "\n";
 	
 }
 sub scraper {
@@ -236,25 +270,29 @@ sub scraper {
 			my @rows = $ts->rows();
 			my $lim = scalar @rows;
 			#print $lim . " rows long\n";
+            my $k = 1;
+            if(length($ts->cell(2,1))<10){
+                $k = 3;
+            }
 			if($ts->count==0){
 				if($j==5){
-					my @info = split / -/, $ts->cell(2,3);
+					my @info = split / -/, $ts->cell(2,$k);
 					$disTeam{"QB"} = [$ts->cell(2,-1), trim($info[0])];
-					@info = split / -/, $ts->cell(3,3);
+					@info = split / -/, $ts->cell(3,$k);
 					$disTeam{"RB1"} = [$ts->cell(3,-1), trim($info[0])];
-					@info = split / -/, $ts->cell(4,3);
+					@info = split / -/, $ts->cell(4,$k);
 					$disTeam{"RB2"} = [$ts->cell(4,-1), trim($info[0])];
-					@info = split / -/, $ts->cell(5,3);
+					@info = split / -/, $ts->cell(5,$k);
 					$disTeam{"WR1"} = [$ts->cell(5,-1), trim($info[0])];
-					@info = split / -/, $ts->cell(6,3);
+					@info = split / -/, $ts->cell(6,$k);
 					$disTeam{"WR2"} = [$ts->cell(6,-1), trim($info[0])];
-					@info = split / -/, $ts->cell(7,3);
+					@info = split / -/, $ts->cell(7,$k);
 					$disTeam{"TE"} = [$ts->cell(7,-1), trim($info[0])];
-					@info = split / -/, $ts->cell(8,3);
+					@info = split / -/, $ts->cell(8,$k);
 					$disTeam{"W/R"} = [$ts->cell(8,-1), trim($info[0])];
 					#Skip 9 for "Bench" row
 					for(my $i=10; $i<$lim; $i++){
-						@info = split / -/, $ts->cell($i,3);
+						@info = split / -/, $ts->cell($i,$k);
 						$disTeam{"BN".($i-9)} = [$ts->cell($i,-1), trim($info[0])];
 					
 					}
@@ -284,7 +322,7 @@ sub scraper {
 			}
 			if($ts->count==1){
 				if($j==5){
-					my @info = split / -/, $ts->cell(2,3);
+					my @info = split / -/, $ts->cell(2,$k);
 					$disTeam{"K"} = [$ts->cell(2,-1), trim($info[0])];
 				}else{
 					my @info = split / -/, $ts->cell(2,2);
@@ -293,7 +331,7 @@ sub scraper {
 			}
 			if($ts->count==2){
 				if($j==5){
-					my @info = split /-/, $ts->cell(2,3);
+					my @info = split /-/, $ts->cell(2,$k);
 					$disTeam{"DEF"} = [$ts->cell(2,-1), trim($info[0])];
 				}else{
 					my @info = split /-/, $ts->cell(2,2);
@@ -607,7 +645,7 @@ sub scores{
     }
 }
 print "\t#########################################\n";
-print "\t#\tFantasyFiend v0.3\t\t#\n";
+print "\t#\tFantasyFiend v0.4\t\t#\n";
 print "\t#\tBy: James Watterson\t\t#\n";
 print "\t#########################################\n\t\tuse h, help, or ? for usage\n";
 my @choices = ("scrape", "analyze", "stats", "team", "quit", "run", "compare", "scores");
