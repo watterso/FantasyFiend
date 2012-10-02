@@ -1,0 +1,1 @@
+[["15.00","Russell Wilson QB"],["14.78","Shaun Hill QB"],["9.48","Brandon Weeden QB"],["6.14","Ryan Tannehill QB"],["1.84","Derek Anderson QB"],["0.50","Tim Tebow QB"],["0.16","David Carr QB"]]

@@ -563,6 +563,7 @@ sub analyze{
 	if($week == 0){
 		$week = checkWeek();
 	}
+    $theWeek = $week;
 	my $dir = dir("week" . $week);
 	my $json = JSON->new->allow_nonref;
 	my $file1 = $dir->file("hash.txt");
@@ -628,7 +629,7 @@ sub comp{
 }
 sub teamScore{
     my %theTeam = %{$teams[$_[0]]};
-    my $tScore+= $theTeam{QB}[0]+$theTeam{RB1}[0]+$theTeam{RB2}[0]+$theTeam{WR1}[0]+$theTeam{WR2}[0]+$theTeam{TE}[0]+$theTeam{K}[0]+$theTeam{DEF}[0];
+    my $tScore+= $theTeam{QB}[0]+$theTeam{RB1}[0]+$theTeam{RB2}[0]+$theTeam{WR1}[0]+$theTeam{WR2}[0]+$theTeam{TE}[0]+$theTeam{"W/R"}[0]+$theTeam{K}[0]+$theTeam{DEF}[0];
     return $tScore;
 	
 }

@@ -1,0 +1,1 @@
+[["21.48","Brandon Weeden QB"],["19.40","Ryan Tannehill QB"],["12.84","Russell Wilson QB"],["2.20","Tim Tebow QB"]]
